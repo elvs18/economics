@@ -1,120 +1,366 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Словарь экономиста</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Словарь экономиста | Economics Hub</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Google Fonts: Inter & Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="media.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="app">
-  <header class="topbar">
-    <div class="topbar_row">
+  <!-- Верхняя панель (Header / Navbar) -->
+  <header class="navbar">
+    <div class="container navbar-inner">
       <div class="brand">
-        <h1 id="appTitle"></h1>
-        <div class="sub" id="appSub"></div>
-      </div>
-      <div class="header_controls">
-        <div class="lang_switch" id="langSwitch">
-          <button type="button" data-lang="ru">RU</button>
-          <button type="button" data-lang="en">EN</button>
-          <button type="button" data-lang="uz">UZ</button>
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+            <path d="M6 6h10"/>
+            <path d="M6 10h10"/>
+            <path d="M6 14h6"/>
+          </svg>
         </div>
-        <div id="ownerArea"></div>
+        <div class="brand-text">
+          <h1 id="appTitle">Словарь экономиста</h1>
+          <p id="appSub">Интерактивный академический справочник</p>
+        </div>
+      </div>
+
+      <div class="navbar-actions">
+        <!-- Переключатель языка -->
+        <div class="lang-switch" id="langSwitch" role="group" aria-label="Язык интерфейса">
+          <button type="button" class="lang-btn active" data-lang="ru">RU</button>
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="uz">UZ</button>
+        </div>
+
+        <!-- Тренажёр флеш-карточек -->
+        <button type="button" class="btn btn-outline" id="quizBtn" title="Тренировка карточек">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect width="18" height="18" x="3" y="3" rx="2"/>
+            <path d="m9 9 6 6m0-6-6 6"/>
+          </svg>
+          <span class="btn-text">Тренажёр</span>
+        </button>
+
+        <!-- Кнопка автора -->
+        <button type="button" class="btn btn-ghost" id="authorBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="8" r="5"/>
+            <path d="M20 21a8 8 0 0 0-16 0"/>
+          </svg>
+          <span id="authorBtnText">Я — автор</span>
+        </button>
+
+        <!-- Кнопка добавления термина (активна в режиме автора) -->
+        <button type="button" class="btn btn-primary" id="openAddBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14"/>
+            <path d="M12 5v14"/>
+          </svg>
+          <span>Добавить термин</span>
+        </button>
       </div>
     </div>
-    <div class="search_wrap">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="searchInput" type="text" autocomplete="off">
-    </div>
-    <div class="stats" id="statsLine"></div>
   </header>
 
-  <div class="layout">
-    <nav class="rail" id="rail" aria-label="alphabet index"></nav>
-    <main class="content" id="content">
-      <div id="list"></div>
-    </main>
+  <!-- Главный контейнер -->
+  <div class="container main-layout">
+    
+    <!-- Секция поиска, фильтров и статистики -->
+    <section class="controls-panel">
+      <!-- Поисковая строка -->
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.3-4.3"/>
+        </svg>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="Поиск по терминам, определениям или примерам..." 
+          autocomplete="off"
+        >
+        <button type="button" class="search-clear hidden" id="searchClearBtn" title="Очистить поиск">✕</button>
+        <kbd class="search-kbd">/</kbd>
+      </div>
+
+      <!-- Категории (Чипсы-фильтры) -->
+      <div class="categories-filter" id="categoryFilter" role="toolbar" aria-label="Фильтр по категориям">
+        <button type="button" class="category-chip active" data-category="all">
+          <span class="chip-dot"></span>
+          <span>Все разделы</span>
+        </button>
+        <button type="button" class="category-chip" data-category="micro">
+          <span class="chip-tag tag-micro">●</span>
+          <span>Микроэкономика</span>
+        </button>
+        <button type="button" class="category-chip" data-category="macro">
+          <span class="chip-tag tag-macro">●</span>
+          <span>Макроэкономика</span>
+        </button>
+        <button type="button" class="category-chip" data-category="finance">
+          <span class="chip-tag tag-finance">●</span>
+          <span>Финансы и банки</span>
+        </button>
+        <button type="button" class="category-chip" data-category="econometrics">
+          <span class="chip-tag tag-econometrics">●</span>
+          <span>Эконометрика</span>
+        </button>
+        <button type="button" class="category-chip" data-category="international">
+          <span class="chip-tag tag-international">●</span>
+          <span>Мировая экономика</span>
+        </button>
+        <button type="button" class="category-chip" data-category="other">
+          <span class="chip-tag tag-other">●</span>
+          <span>Другое</span>
+        </button>
+      </div>
+
+      <!-- Строка статистики и быстрого экспорта/импорта -->
+      <div class="stats-bar">
+        <div class="stats-count" id="statsCount">
+          Всего терминов: <strong id="totalCount">0</strong>
+          <span id="filteredStats" class="filtered-stats"></span>
+        </div>
+        <div class="backup-actions">
+          <button type="button" class="btn-text-action" id="exportBtn" title="Экспорт базы в JSON">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Экспорт
+          </button>
+          <label class="btn-text-action" title="Импорт базы из JSON">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Импорт
+            <input type="file" id="importInput" accept=".json" class="hidden-file-input">
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Основная сетка: Алфавитный навигатор + Карточки -->
+    <div class="content-grid">
+      
+      <!-- Алфавитная полоса (Sticky Rail) -->
+      <aside class="alphabet-rail" aria-label="Алфавитный указатель">
+        <div class="alphabet-inner" id="alphabetRail">
+          <!-- Буквы генерируются через JS -->
+        </div>
+      </aside>
+
+      <!-- Контейнер карточек терминов -->
+      <main class="terms-feed" id="termsFeed">
+        
+        <!-- Заглушка, когда терминов нет (Empty State) -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/>
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+              <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/>
+              <path d="M2 7h20"/>
+            </svg>
+          </div>
+          <h3 id="emptyTitle">В словаре пока нет записей</h3>
+          <p id="emptyDesc">Нажмите кнопку «Добавить термин» выше, чтобы создать первую экономическую карточку, или импортируйте готовый список.</p>
+        </div>
+
+        <!-- Сюда вставляются группы и карточки через JS -->
+        <div class="terms-list" id="termsList"></div>
+      </main>
+    </div>
   </div>
-</div>
 
-<div class="modal_overlay hidden" id="modalOverlay">
-  <form class="card_form" id="termForm" novalidate>
-    <div class="card_title" id="formTitle"></div>
+  <!-- ============================================================
+       МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ТЕРМИНА
+       ============================================================ -->
+  <dialog class="modal-dialog" id="termDialog">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <span class="modal-badge" id="modalBadge">Карточка</span>
+          <h2 class="modal-title" id="termDialogTitle">Новый термин</h2>
+        </div>
+        <button type="button" class="modal-close" id="closeTermDialogBtn" aria-label="Закрыть">✕</button>
+      </div>
 
-    <div class="lang_tabs" id="formLangTabs">
-      <button type="button" class="lang_tab active" data-pane="ru">RU <span class="req">*</span></button>
-      <button type="button" class="lang_tab" data-pane="en">EN</button>
-      <button type="button" class="lang_tab" data-pane="uz">UZ</button>
+      <form id="termForm" class="modal-form" novalidate>
+        <!-- Вкладки языков для термина -->
+        <div class="form-lang-tabs" id="formLangTabs">
+          <button type="button" class="tab-btn active" data-tab="ru">
+            <span>Русский</span> <span class="badge-req">*</span>
+          </button>
+          <button type="button" class="tab-btn" data-tab="en">
+            <span>English</span>
+          </button>
+          <button type="button" class="tab-btn" data-tab="uz">
+            <span>Oʻzbekcha</span>
+          </button>
+        </div>
+
+        <!-- Языковая панель: RU -->
+        <div class="tab-pane active" data-pane="ru">
+          <div class="form-group" id="groupTermRu">
+            <label for="inputTermRu">Термин (RU) <span class="req">*</span></label>
+            <input type="text" id="inputTermRu" placeholder="Например: ВВП, Инфляция, Спрос..." maxlength="120" required>
+            <span class="field-error" id="errorTermRu">Пожалуйста, укажите термин на русском</span>
+          </div>
+
+          <div class="form-group" id="groupDefRu">
+            <label for="inputDefRu">Определение (RU) <span class="req">*</span></label>
+            <textarea id="inputDefRu" rows="3" placeholder="Чёткое и понятное экономическое определение..." required></textarea>
+            <span class="field-error" id="errorDefRu">Добавьте понятное определение</span>
+          </div>
+
+          <div class="form-group">
+            <label for="inputExRu">Пример, формула или пояснение (RU)</label>
+            <textarea id="inputExRu" rows="2" placeholder="Например: формула Y = C + I + G + NX или пример из практики"></textarea>
+          </div>
+        </div>
+
+        <!-- Языковая панель: EN -->
+        <div class="tab-pane" data-pane="en">
+          <div class="form-group">
+            <label for="inputTermEn">Term (EN)</label>
+            <input type="text" id="inputTermEn" placeholder="e.g. GDP, Inflation, Opportunity Cost..." maxlength="120">
+          </div>
+
+          <div class="form-group">
+            <label for="inputDefEn">Definition (EN)</label>
+            <textarea id="inputDefEn" rows="3" placeholder="Economic definition in English..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="inputExEn">Example or formula (EN)</label>
+            <textarea id="inputExEn" rows="2" placeholder="e.g. formula or practical real-world example"></textarea>
+          </div>
+        </div>
+
+        <!-- Языковая панель: UZ -->
+        <div class="tab-pane" data-pane="uz">
+          <div class="form-group">
+            <label for="inputTermUz">Atama (UZ)</label>
+            <input type="text" id="inputTermUz" placeholder="Masalan: YaIM, Inflyatsiya, Talab..." maxlength="120">
+          </div>
+
+          <div class="form-group">
+            <label for="inputDefUz">Taʼrifi (UZ)</label>
+            <textarea id="inputDefUz" rows="3" placeholder="Oʻzbek tilidagi iqtisodiy taʼrifi..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="inputExUz">Misol yoki formula (UZ)</label>
+            <textarea id="inputExUz" rows="2" placeholder="Amaliy misol yoki hisoblash formulasi"></textarea>
+          </div>
+        </div>
+
+        <!-- Категория термина -->
+        <div class="form-group">
+          <label for="inputCategory">Раздел экономики</label>
+          <div class="custom-select-wrap">
+            <select id="inputCategory">
+              <option value="micro">📊 Микроэкономика</option>
+              <option value="macro">🏛️ Макроэкономика</option>
+              <option value="finance">💰 Финансы и банкинг</option>
+              <option value="econometrics">📐 Эконометрика и статистика</option>
+              <option value="international">🌍 Международная экономика</option>
+              <option value="other">💡 Прочее / Общие понятия</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Кнопки управления формой -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelTermBtn">Отмена</button>
+          <button type="submit" class="btn btn-primary" id="saveTermBtn">Сохранить термин</button>
+        </div>
+      </form>
     </div>
+  </dialog>
 
-    <div class="lang_pane active" data-pane="ru">
-      <div class="field" id="field-term-ru">
-        <label id="label-term-ru"></label>
-        <input id="inputTermRu" maxlength="120">
-        <div class="field_error" id="error-term-ru"></div>
+  <!-- ============================================================
+       МОДАЛЬНОЕ ОКНО: АВТОРИЗАЦИЯ АВТОРА
+       ============================================================ -->
+  <dialog class="modal-dialog modal-sm" id="authorDialog">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 class="modal-title">Панель автора</h2>
+        <button type="button" class="modal-close" id="closeAuthorDialogBtn" aria-label="Закрыть">✕</button>
       </div>
-      <div class="field" id="field-def-ru">
-        <label id="label-def-ru"></label>
-        <textarea id="inputDefRu"></textarea>
-        <div class="field_error" id="error-def-ru"></div>
+      <div class="modal-body">
+        <p class="dialog-hint">Введите код доступа для управления и добавления новых терминов:</p>
+        <div class="form-group">
+          <input type="password" id="authorPassInput" placeholder="Код доступа..." autocomplete="current-password">
+          <span class="field-error" id="authorPassError">Неверный код доступа</span>
+        </div>
       </div>
-      <div class="field">
-        <label id="label-ex-ru"></label>
-        <textarea id="inputExRu" style="min-height:46px;"></textarea>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelAuthorBtn">Отмена</button>
+        <button type="button" class="btn btn-primary" id="loginAuthorBtn">Войти</button>
       </div>
     </div>
+  </dialog>
 
-    <div class="lang_pane" data-pane="en">
-      <div class="field">
-        <label id="label-term-en"></label>
-        <input id="inputTermEn" maxlength="120">
+  <!-- ============================================================
+       МОДАЛЬНОЕ ОКНО: ТРЕНАЖЁР КАРТОЧЕК (FLASHCARDS)
+       ============================================================ -->
+  <dialog class="modal-dialog modal-quiz" id="quizDialog">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-header-info">
+          <span class="modal-badge">Тренажёр памяти</span>
+          <h2 class="modal-title" id="quizProgress">Карточка 1 из 10</h2>
+        </div>
+        <button type="button" class="modal-close" id="closeQuizDialogBtn" aria-label="Закрыть">✕</button>
       </div>
-      <div class="field">
-        <label id="label-def-en"></label>
-        <textarea id="inputDefEn"></textarea>
-      </div>
-      <div class="field">
-        <label id="label-ex-en"></label>
-        <textarea id="inputExEn" style="min-height:46px;"></textarea>
+
+      <div class="quiz-body">
+        <!-- Интерактивная карточка с переворотом -->
+        <div class="flashcard-container" id="flashcardBox">
+          <div class="flashcard-inner" id="flashcardInner">
+            <!-- Лицевая сторона (Термин) -->
+            <div class="flashcard-front">
+              <span class="card-side-label">Термин</span>
+              <h3 class="card-front-title" id="quizCardTitle">Нажмите «Старт»</h3>
+              <span class="card-category-pill" id="quizCardCategory">Раздел</span>
+              <p class="card-hint">Нажмите на карточку или Пробел, чтобы перевернуть</p>
+            </div>
+            <!-- Оборотная сторона (Определение) -->
+            <div class="flashcard-back">
+              <span class="card-side-label">Определение</span>
+              <div class="card-back-text" id="quizCardDef">Здесь будет определение термина</div>
+              <div class="card-back-example" id="quizCardEx"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Управление карточками в тренажёре -->
+        <div class="quiz-controls">
+          <button type="button" class="btn btn-secondary" id="quizPrevBtn">← Назад</button>
+          <button type="button" class="btn btn-outline" id="quizFlipBtn">Перевернуть</button>
+          <button type="button" class="btn btn-primary" id="quizNextBtn">Далее →</button>
+        </div>
       </div>
     </div>
+  </dialog>
 
-    <div class="lang_pane" data-pane="uz">
-      <div class="field">
-        <label id="label-term-uz"></label>
-        <input id="inputTermUz" maxlength="120">
-      </div>
-      <div class="field">
-        <label id="label-def-uz"></label>
-        <textarea id="inputDefUz"></textarea>
-      </div>
-      <div class="field">
-        <label id="label-ex-uz"></label>
-        <textarea id="inputExUz" style="min-height:46px;"></textarea>
-      </div>
-    </div>
+  <!-- Всплывающее уведомление (Toast) -->
+  <div class="toast-notification" id="toastMessage" role="status" aria-live="polite"></div>
 
-    <div class="field">
-      <label id="label-category"></label>
-      <select id="inputCategory"></select>
-    </div>
-
-    <div class="form_actions">
-      <button type="button" class="btn_secondary" id="cancelBtn"></button>
-      <button type="submit" class="btn_primary" id="submitBtn"></button>
-    </div>
-  </form>
-</div>
-
-<div class="save_flag" id="saveFlag"></div>
-
-<script src="script.js"></script>
+  <!-- Подключение вашего чистого JS -->
+  <script src="script.js"></script>
 </body>
 </html>
