@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Словарь экономиста</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="media.css">
+</head>
+<body>
+
+<div id="app">
+  <header class="topbar">
+    <div class="topbar_row">
+      <div class="brand">
+        <h1 id="appTitle"></h1>
+        <div class="sub" id="appSub"></div>
+      </div>
+      <div class="header_controls">
+        <div class="lang_switch" id="langSwitch">
+          <button type="button" data-lang="ru">RU</button>
+          <button type="button" data-lang="en">EN</button>
+          <button type="button" data-lang="uz">UZ</button>
+        </div>
+        <div id="ownerArea"></div>
+      </div>
+    </div>
+    <div class="search_wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="searchInput" type="text" autocomplete="off">
+    </div>
+    <div class="stats" id="statsLine"></div>
+  </header>
+
+  <div class="layout">
+    <nav class="rail" id="rail" aria-label="alphabet index"></nav>
+    <main class="content" id="content">
+      <div id="list"></div>
+    </main>
+  </div>
+</div>
+
+<div class="modal_overlay hidden" id="modalOverlay">
+  <form class="card_form" id="termForm" novalidate>
+    <div class="card_title" id="formTitle"></div>
+
+    <div class="lang_tabs" id="formLangTabs">
+      <button type="button" class="lang_tab active" data-pane="ru">RU <span class="req">*</span></button>
+      <button type="button" class="lang_tab" data-pane="en">EN</button>
+      <button type="button" class="lang_tab" data-pane="uz">UZ</button>
+    </div>
+
+    <div class="lang_pane active" data-pane="ru">
+      <div class="field" id="field-term-ru">
+        <label id="label-term-ru"></label>
+        <input id="inputTermRu" maxlength="120">
+        <div class="field_error" id="error-term-ru"></div>
+      </div>
+      <div class="field" id="field-def-ru">
+        <label id="label-def-ru"></label>
+        <textarea id="inputDefRu"></textarea>
+        <div class="field_error" id="error-def-ru"></div>
+      </div>
+      <div class="field">
+        <label id="label-ex-ru"></label>
+        <textarea id="inputExRu" style="min-height:46px;"></textarea>
+      </div>
+    </div>
+
+    <div class="lang_pane" data-pane="en">
+      <div class="field">
+        <label id="label-term-en"></label>
+        <input id="inputTermEn" maxlength="120">
+      </div>
+      <div class="field">
+        <label id="label-def-en"></label>
+        <textarea id="inputDefEn"></textarea>
+      </div>
+      <div class="field">
+        <label id="label-ex-en"></label>
+        <textarea id="inputExEn" style="min-height:46px;"></textarea>
+      </div>
+    </div>
+
+    <div class="lang_pane" data-pane="uz">
+      <div class="field">
+        <label id="label-term-uz"></label>
+        <input id="inputTermUz" maxlength="120">
+      </div>
+      <div class="field">
+        <label id="label-def-uz"></label>
+        <textarea id="inputDefUz"></textarea>
+      </div>
+      <div class="field">
+        <label id="label-ex-uz"></label>
+        <textarea id="inputExUz" style="min-height:46px;"></textarea>
+      </div>
+    </div>
+
+    <div class="field">
+      <label id="label-category"></label>
+      <select id="inputCategory"></select>
+    </div>
+
+    <div class="form_actions">
+      <button type="button" class="btn_secondary" id="cancelBtn"></button>
+      <button type="submit" class="btn_primary" id="submitBtn"></button>
+    </div>
+  </form>
+</div>
+
+<div class="save_flag" id="saveFlag"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

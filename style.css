@@ -1,0 +1,448 @@
+/* ============================================================
+   ПЕРЕМЕННЫЕ И БАЗОВЫЕ СТИЛИ
+   ============================================================ */
+:root{
+  --paper:#FAFAF7;
+  --stripe:#E7EFE0;
+  --ink:#1F2D24;
+  --ink-soft:#5B6B5C;
+  --green:#3F6B4A;
+  --green-dark:#2C4D34;
+  --red:#A8392E;
+  --brass:#B8923E;
+  --border:#C9D6C3;
+  --radius:4px;
+}
+
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+::selection{ background:var(--green); color:var(--paper); }
+
+:focus-visible{
+  outline:2px solid var(--red);
+  outline-offset:2px;
+}
+
+button, input, select, textarea{ font-family:inherit; }
+
+#app{ max-width:1040px; margin:0 auto; min-height:100vh; }
+
+
+/* ============================================================
+   ШАПКА САЙТА
+   ============================================================ */
+.topbar{
+  padding:20px 18px 14px;
+  border-bottom:1px solid var(--border);
+  box-shadow:0 3px 0 -2px var(--paper), 0 4px 0 -2px var(--border);
+}
+.topbar_row{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.brand h1{
+  font-family:'Fraunces',serif;
+  font-weight:700;
+  font-size:clamp(20px,5vw,28px);
+  margin:0;
+  letter-spacing:-0.01em;
+}
+.brand .sub{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-top:4px;
+}
+.header_controls{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:0 0 auto;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+
+/* ============================================================
+   ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА (RU / EN / UZ)
+   ============================================================ */
+.lang_switch{
+  display:flex;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+.lang_switch button{
+  background:var(--paper);
+  border:none;
+  padding:7px 10px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  font-weight:600;
+  color:var(--ink-soft);
+  cursor:pointer;
+  letter-spacing:.03em;
+}
+.lang_switch button + button{ border-left:1px solid var(--border); }
+.lang_switch button.active{ background:var(--green); color:var(--paper); }
+
+
+/* ============================================================
+   КНОПКА «ДОБАВИТЬ» И ВХОД АВТОРА
+   ============================================================ */
+.btn_add{
+  background:var(--green);
+  color:var(--paper);
+  border:1px solid var(--green);
+  box-shadow:0 0 0 3px var(--paper), 0 0 0 4px var(--green-dark);
+  border-radius:var(--radius);
+  padding:10px 14px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:transform .15s ease, background .15s ease;
+}
+.btn_add:hover{ background:var(--green-dark); transform:translateY(-1px); }
+
+.owner_line{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  color:var(--ink-soft);
+}
+.owner_line button{
+  background:none;
+  border:none;
+  color:var(--green-dark);
+  text-decoration:underline;
+  cursor:pointer;
+  font:inherit;
+  padding:0;
+}
+
+.owner_login{ display:flex; gap:6px; align-items:center; }
+.owner_login input{
+  width:120px;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:6px 8px;
+  font-size:12px;
+}
+.owner_login button{
+  border:1px solid var(--green);
+  background:var(--green);
+  color:var(--paper);
+  border-radius:var(--radius);
+  padding:6px 10px;
+  font-size:11px;
+  font-weight:600;
+  cursor:pointer;
+}
+.owner_error{ font-size:11px; color:var(--red); margin-top:4px; display:none; }
+.owner_error.show{ display:block; }
+
+
+/* ============================================================
+   ПОИСК И СТАТИСТИКА
+   ============================================================ */
+.search_wrap{ margin-top:16px; position:relative; }
+.search_wrap input{
+  width:100%;
+  background:var(--paper);
+  border:1px solid var(--border);
+  box-shadow:0 0 0 3px var(--paper);
+  border-radius:var(--radius);
+  padding:11px 12px 11px 34px;
+  font-size:14px;
+  color:var(--ink);
+}
+.search_wrap input::placeholder{ color:var(--ink-soft); }
+.search_wrap svg{
+  position:absolute;
+  left:11px;
+  top:50%;
+  transform:translateY(-50%);
+  width:15px;
+  height:15px;
+  color:var(--ink-soft);
+}
+
+.stats{
+  margin-top:10px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  color:var(--ink-soft);
+  letter-spacing:.03em;
+}
+
+
+/* ============================================================
+   АЛФАВИТНЫЙ УКАЗАТЕЛЬ (RAIL)
+   ============================================================ */
+.layout{ display:flex; flex-direction:column; }
+
+.rail{
+  display:flex;
+  overflow-x:auto;
+  gap:2px;
+  padding:10px 18px;
+  border-bottom:1px solid var(--border);
+  -ms-overflow-style:none;
+  scrollbar-width:none;
+}
+.rail::-webkit-scrollbar{ display:none; }
+.rail_letter{
+  flex:0 0 auto;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  font-weight:600;
+  width:26px;
+  height:26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:3px;
+  color:var(--border);
+  background:transparent;
+  border:none;
+  cursor:default;
+}
+.rail_letter.active{ color:var(--green-dark); background:var(--stripe); cursor:pointer; }
+.rail_letter.active:hover{ background:var(--border); }
+
+.content{ padding:6px 18px 60px; }
+
+
+/* ============================================================
+   ОСНОВНОЙ СПИСОК ТЕРМИНОВ
+   ============================================================ */
+.empty{ text-align:center; padding:70px 20px; color:var(--ink-soft); }
+.empty .glyph{
+  font-family:'Fraunces',serif;
+  font-size:48px;
+  color:var(--border);
+  margin-bottom:6px;
+}
+.empty p{ font-size:14px; max-width:340px; margin:6px auto 0; line-height:1.5; }
+
+.letter_group{ margin-top:22px; }
+.letter_head{
+  font-family:'Fraunces',serif;
+  font-weight:700;
+  font-size:26px;
+  color:var(--green-dark);
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  padding-bottom:6px;
+  border-bottom:2px solid var(--green);
+  box-shadow:0 3px 0 -2px var(--border);
+  margin-bottom:4px;
+}
+.letter_head .count{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  font-weight:500;
+  color:var(--ink-soft);
+}
+
+.entry{
+  padding:14px 10px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:6px 14px;
+  align-items:start;
+}
+.entry:nth-of-type(odd){ background:var(--stripe); }
+.entry_term{
+  font-family:'Fraunces',serif;
+  font-weight:600;
+  font-size:17px;
+  color:var(--ink);
+}
+.entry_fallback{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  color:var(--brass);
+  margin-left:6px;
+}
+.entry_tag{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--red);
+  border:1px solid var(--red);
+  border-radius:2px;
+  padding:1px 6px;
+  display:inline-block;
+  transform:rotate(-1.5deg);
+  margin-left:8px;
+  vertical-align:middle;
+}
+.entry_def{ grid-column:1 / -1; font-size:14px; line-height:1.55; color:var(--ink); margin-top:2px; }
+.entry_example{ grid-column:1 / -1; font-size:13px; font-style:italic; color:var(--ink-soft); margin-top:2px; }
+.entry_actions{ display:flex; gap:4px; align-self:start; }
+
+.icon_btn{
+  background:none;
+  border:none;
+  cursor:pointer;
+  color:var(--ink-soft);
+  padding:4px;
+  border-radius:3px;
+  display:flex;
+}
+.icon_btn:hover{ color:var(--ink); background:var(--border); }
+.icon_btn.danger:hover{ color:var(--red); }
+.icon_btn svg{ width:15px; height:15px; }
+
+.confirm_row{
+  grid-column:1 / -1;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:12.5px;
+  color:var(--red);
+  margin-top:4px;
+}
+.confirm_row button{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11px;
+  border:1px solid var(--red);
+  background:none;
+  color:var(--red);
+  border-radius:2px;
+  padding:2px 8px;
+  cursor:pointer;
+}
+.confirm_row button.yes{ background:var(--red); color:var(--paper); }
+.confirm_row button.no{ border-color:var(--ink-soft); color:var(--ink-soft); }
+
+
+/* ============================================================
+   МОДАЛЬНОЕ ОКНО — КАРТОЧКА ТЕРМИНА
+   ============================================================ */
+.modal_overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(31,45,36,0.45);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  z-index:50;
+}
+.modal_overlay.hidden{ display:none; }
+
+.card_form{
+  background:var(--paper);
+  width:100%;
+  max-width:520px;
+  border-radius:var(--radius) var(--radius) 0 0;
+  box-shadow:0 -8px 30px rgba(31,45,36,0.25);
+  padding:22px 20px 20px;
+  max-height:88vh;
+  overflow-y:auto;
+  position:relative;
+}
+.card_form::before{
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0; height:6px;
+  background-image:repeating-linear-gradient(90deg, var(--border) 0 8px, transparent 8px 16px);
+  border-radius:var(--radius) var(--radius) 0 0;
+}
+.card_title{ font-family:'Fraunces',serif; font-weight:600; font-size:19px; margin:6px 0 14px; }
+
+.lang_tabs{ display:flex; gap:4px; margin-bottom:14px; border-bottom:1px solid var(--border); }
+.lang_tab{
+  background:none;
+  border:none;
+  padding:8px 12px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  font-weight:600;
+  color:var(--ink-soft);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+}
+.lang_tab.active{ color:var(--green-dark); border-bottom-color:var(--green); }
+.lang_tab .req{ color:var(--red); }
+
+.lang_pane{ display:none; }
+.lang_pane.active{ display:block; }
+
+.field{ margin-bottom:14px; }
+.field label{
+  display:block;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--ink-soft);
+  margin-bottom:6px;
+}
+.field input, .field select, .field textarea{
+  width:100%;
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:var(--radius);
+  padding:10px 11px;
+  font-size:14px;
+  color:var(--ink);
+  resize:vertical;
+}
+.field textarea{ min-height:64px; line-height:1.45; }
+.field_error{ font-size:12px; color:var(--red); margin-top:4px; display:none; }
+.field.invalid input, .field.invalid textarea{ border-color:var(--red); }
+.field.invalid .field_error{ display:block; }
+
+.form_actions{ display:flex; gap:10px; margin-top:18px; }
+.btn_primary, .btn_secondary{
+  flex:1;
+  padding:11px;
+  border-radius:var(--radius);
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+}
+.btn_primary{ background:var(--green); color:var(--paper); border:1px solid var(--green); }
+.btn_primary:hover{ background:var(--green-dark); }
+.btn_secondary{ background:none; border:1px solid var(--border); color:var(--ink-soft); }
+.btn_secondary:hover{ background:var(--stripe); }
+
+
+/* ============================================================
+   УВЕДОМЛЕНИЕ О СОХРАНЕНИИ
+   ============================================================ */
+.save_flag{
+  position:fixed;
+  bottom:18px;
+  left:50%;
+  transform:translateX(-50%) translateY(0);
+  background:var(--ink);
+  color:var(--paper);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  padding:8px 16px;
+  border-radius:3px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease, transform .25s ease;
+  z-index:60;
+}
+.save_flag.show{ opacity:1; transform:translateX(-50%) translateY(-6px); }
+.save_flag.error{ background:var(--red); }
