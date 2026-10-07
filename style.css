@@ -122,6 +122,24 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Полностью скрываем видимую полосу прокрутки страницы справа */
+html, body {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE / Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari, Edge, Opera */
+  width: 0 !important;
+  height: 0 !important;
 }
 
 body {
@@ -397,8 +415,9 @@ button {
 
 .search-box input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.25);
   background: var(--bg-surface);
+  outline: none;
 }
 
 .search-clear {
@@ -443,7 +462,12 @@ button {
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 4px;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.categories-filter::-webkit-scrollbar {
+  display: none;
 }
 
 .category-chip {
@@ -544,64 +568,74 @@ button {
 }
 
 /* ============================================================
-   СЕТКА КОНТЕНТА: АЛФАВИТ + КАРТОЧКИ
+   ГОРИЗОНТАЛЬНЫЙ АЛФАВИТНЫЙ ФИЛЬТР
    ============================================================ */
-.content-grid {
-  display: grid;
-  grid-template-columns: 56px 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-/* Алфавитный навигатор (Sticky Rail) */
-.alphabet-rail {
-  position: sticky;
-  top: 86px;
-  max-height: calc(100vh - 110px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 4px;
-  scrollbar-width: thin;
-}
-
-.alphabet-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+.alphabet-filter-wrap {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 6px 3px;
+  border-radius: var(--radius-lg);
+  padding: 8px 12px;
   box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
 }
 
-.rail-letter {
+.alphabet-bar {
   display: flex;
   align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;          /* Запрет переноса на новую строку */
+  overflow-x: auto;           /* Горизонтальный скролл */
+  scrollbar-width: none;      /* Скрываем полосу в Firefox */
+  -ms-overflow-style: none;   /* Скрываем полосу в IE/Edge */
+  padding: 2px 0;
+}
+
+.alphabet-bar::-webkit-scrollbar {
+  display: none;              /* Скрываем полосу в Chrome/Safari/Edge */
+}
+
+.letter-filter-btn {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  width: 100%;
-  height: 28px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
   border-radius: var(--radius-sm);
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.825rem;
   font-weight: 600;
-  color: var(--text-light);
+  color: var(--text-muted);   /* Все буквы одинакового цвета по умолчанию */
+  background: var(--bg-subtle);
+  border: 1px solid transparent;
   transition: var(--transition);
-  cursor: default;
-}
-
-.rail-letter.active {
-  color: var(--text-main);
   cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;             /* Не сжимать кнопки */
 }
 
-.rail-letter.active:hover {
+.letter-filter-btn:hover {
   background: var(--primary-light);
   color: var(--primary);
+  border-color: var(--primary);
 }
 
-/* Лента терминов */
+.letter-filter-btn.selected {
+  background: var(--primary) !important;
+  color: #FFFFFF !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 2px 6px rgba(13, 148, 136, 0.35);
+}
+
+.letter-filter-btn.btn-all-letters {
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  padding: 0 14px;
+}
+
+/* Лента терминов на всю ширину страницы */
 .terms-feed {
+  width: 100%;
   min-width: 0;
 }
 
@@ -615,7 +649,7 @@ button {
   align-items: baseline;
   gap: 10px;
   font-family: var(--font-mono);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--primary);
   padding-bottom: 8px;
@@ -632,11 +666,11 @@ button {
   border-radius: var(--radius-full);
 }
 
-/* Сетка карточек терминов */
+/* Сетка карточек терминов — стоят рядышком (2-3 колонки) */
 .terms-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
+  gap: 20px;
 }
 
 /* Сама карточка термина */
@@ -1042,13 +1076,18 @@ button {
   color: var(--text-main);
   font-size: 0.9rem;
   transition: var(--transition);
+  outline: none;
 }
 
 .form-group input:focus,
+.form-group input:focus-visible,
 .form-group textarea:focus,
-.form-group select:focus {
+.form-group textarea:focus-visible,
+.form-group select:focus,
+.form-group select:focus-visible {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.2);
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .form-group.has-error input,
@@ -1072,9 +1111,14 @@ button {
   align-items: center;
   justify-content: flex-end;
   gap: 12px;
-  margin-top: 8px;
-  padding-top: 16px;
+  padding: 16px 24px 20px;
   border-top: 1px solid var(--border-color);
+  background: var(--bg-subtle);
+}
+
+.modal-form .modal-footer {
+  margin: 16px -24px -24px -24px;
+  padding: 16px 24px 20px;
 }
 
 /* Модалка логина */
@@ -1242,28 +1286,6 @@ button {
 
   .navbar-actions {
     justify-content: space-between;
-  }
-
-  .content-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .alphabet-rail {
-    position: static;
-    max-height: none;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-
-  .alphabet-inner {
-    flex-direction: row;
-    width: max-content;
-  }
-
-  .rail-letter {
-    width: 32px;
-    height: 32px;
   }
 
   .terms-cards-grid {

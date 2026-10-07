@@ -1,7 +1,5 @@
-/**
- * ============================================================
+/*
  * СЛОВАРЬ ЭКОНОМИСТА (ECONOMICS HUB) — КЛИЕНТСКАЯ ЛОГИКА
- * ============================================================
  */
 
 // 1. КОНФИГУРАЦИЯ И СЕКРЕТНЫЙ КОД АВТОРА
@@ -43,8 +41,11 @@ const I18N = {
     deletedToast: 'Термин удалён',
     flipHint: 'Нажмите на карточку или Пробел, чтобы перевернуть',
     cardSideTerm: 'Термин',
-    cardSideDef: 'Определение',
-    quizCardProgress: (cur, tot) => `Карточка ${cur} из ${tot}`,
+    authorDialogTitle: 'Панель управления',
+    authorDialogHint: 'Введите код доступа для управления словарем:',
+    authorPassPh: 'Код доступа...',
+    authorPassError: 'Неверный код доступа',
+    authorLoginBtn: 'Войти',
     authorActive: 'Автор: активен',
     authorLogout: 'Выйти',
     authorWelcome: 'Вы вошли как автор! Редактирование открыто',
@@ -87,6 +88,11 @@ const I18N = {
     cardSideTerm: 'Term',
     cardSideDef: 'Definition',
     quizCardProgress: (cur, tot) => `Card ${cur} of ${tot}`,
+    authorDialogTitle: 'Control Panel',
+    authorDialogHint: 'Enter passcode to manage the dictionary:',
+    authorPassPh: 'Passcode...',
+    authorPassError: 'Incorrect passcode',
+    authorLoginBtn: 'Log in',
     authorActive: 'Author: active',
     authorLogout: 'Log out',
     authorWelcome: 'Logged in as author! Editing enabled',
@@ -129,6 +135,11 @@ const I18N = {
     cardSideTerm: 'Atama',
     cardSideDef: 'Taʼrif',
     quizCardProgress: (cur, tot) => `Karta: ${cur} / ${tot}`,
+    authorDialogTitle: 'Boshqaruv paneli',
+    authorDialogHint: 'Lugʻatni boshqarish uchun kirish kodini kiriting:',
+    authorPassPh: 'Kirish kodi...',
+    authorPassError: 'Notoʻgʻri kirish kodi',
+    authorLoginBtn: 'Kirish',
     authorActive: 'Muallif: faol',
     authorLogout: 'Chiqish',
     authorWelcome: 'Muallif sifatida kirdingiz! Tahrirlash ochildi',
@@ -359,6 +370,7 @@ function detectUserLanguage() {
 let terms = [];
 let currentLang = detectUserLanguage();
 let currentCategory = 'all';
+let selectedLetter = 'all';
 let searchQuery = '';
 let isAuthor = false;
 let editingTermId = null;
@@ -504,7 +516,15 @@ function getFilteredTerms() {
     if (currentCategory !== 'all' && item.category !== currentCategory) {
       return false;
     }
-    // 2. Фильтр по поисковому запросу во всех 3 языках
+    // 2. Фильтр по выбранной букве алфавита
+    if (selectedLetter !== 'all') {
+      const termName = (getCardContent(item, currentLang).data.term || '').trim();
+      const firstChar = termName.charAt(0).toLocaleUpperCase(currentLang === 'ru' ? 'ru-RU' : 'en-US');
+      if (firstChar !== selectedLetter) {
+        return false;
+      }
+    }
+    // 3. Фильтр по поисковому запросу во всех 3 языках
     if (q) {
       const matchInRu = item.ru && ((item.ru.term || '').toLowerCase().includes(q) || (item.ru.definition || '').toLowerCase().includes(q));
       const matchInEn = item.en && ((item.en.term || '').toLowerCase().includes(q) || (item.en.definition || '').toLowerCase().includes(q));
@@ -528,9 +548,38 @@ function renderStaticTexts() {
   elements.emptyTitle.textContent = tr.emptyTitle;
   elements.emptyDesc.textContent = tr.emptyDesc;
 
-  // Кнопка тренажёра и экспорта
+  // Кнопки действий (Тренажёр, Добавить термин, Экспорт)
   const quizText = elements.quizBtn.querySelector('.btn-text');
   if (quizText) quizText.textContent = tr.quizBtn;
+
+  const addText = elements.openAddBtn.querySelector('.btn-text');
+  if (addText) addText.textContent = tr.addTermBtn;
+
+  const exportText = elements.exportBtn.querySelector('.btn-text');
+  if (exportText) exportText.textContent = tr.exportBtn;
+
+  // Локализация модального окна автора
+  const authorDialogTitle = document.getElementById('authorDialogTitle');
+  if (authorDialogTitle) authorDialogTitle.textContent = tr.authorDialogTitle;
+
+  const authorDialogHint = document.getElementById('authorDialogHint');
+  if (authorDialogHint) authorDialogHint.textContent = tr.authorDialogHint;
+
+  if (elements.authorPassInput) elements.authorPassInput.placeholder = tr.authorPassPh;
+  if (elements.authorPassError) elements.authorPassError.textContent = tr.authorPassError;
+  if (elements.loginAuthorBtn) elements.loginAuthorBtn.textContent = tr.authorLoginBtn;
+  if (elements.cancelAuthorBtn) elements.cancelAuthorBtn.textContent = tr.cancel;
+
+  // Статус автора и выход в футере
+  if (elements.authorStatusBadge) {
+    const statusSpan = elements.authorStatusBadge.querySelector('span');
+    if (statusSpan) statusSpan.textContent = tr.authorActive;
+  }
+  if (elements.authorLogoutBtn) elements.authorLogoutBtn.textContent = tr.authorLogout;
+
+  // Кнопки модального окна добавления/редактирования термина
+  if (elements.cancelTermBtn) elements.cancelTermBtn.textContent = tr.cancel;
+  if (elements.saveTermBtn) elements.saveTermBtn.textContent = tr.save;
 
   // Обновление кнопок переключателя языка
   document.querySelectorAll('#langSwitch button').forEach(btn => {
@@ -549,33 +598,34 @@ function renderStaticTexts() {
   });
 }
 
-function renderAlphabet(visibleTerms) {
+function renderAlphabet() {
   const alphabet = currentLang === 'ru' ? RU_ALPHABET : LAT_ALPHABET;
-  const counts = {};
+  const allLabel = currentLang === 'ru' ? 'Все' : (currentLang === 'uz' ? 'Barchasi' : 'All');
 
-  visibleTerms.forEach(item => {
-    const termName = (getCardContent(item, currentLang).data.term || '').trim();
-    const firstLetter = termName.charAt(0).toLocaleUpperCase(currentLang === 'ru' ? 'ru-RU' : 'en-US');
-    if (firstLetter) {
-      counts[firstLetter] = (counts[firstLetter] || 0) + 1;
-    }
-  });
+  const allBtn = `
+    <button 
+      type="button" 
+      class="letter-filter-btn btn-all-letters ${selectedLetter === 'all' ? 'selected' : ''}" 
+      data-letter="all"
+    >
+      ${allLabel}
+    </button>
+  `;
 
-  elements.alphabetRail.innerHTML = alphabet.map(letter => {
-    const count = counts[letter] || 0;
-    const has = count > 0;
+  const letterButtons = alphabet.map(letter => {
+    const isSel = selectedLetter === letter;
     return `
       <button 
         type="button" 
-        class="rail-letter ${has ? 'active' : ''}" 
+        class="letter-filter-btn ${isSel ? 'selected' : ''}" 
         data-letter="${letter}"
-        ${has ? '' : 'tabindex="-1" aria-disabled="true"'}
-        title="${letter}${has ? ' (' + count + ')' : ''}"
       >
         ${letter}
       </button>
     `;
   }).join('');
+
+  elements.alphabetRail.innerHTML = allBtn + letterButtons;
 }
 
 function renderTerms() {
@@ -584,14 +634,14 @@ function renderTerms() {
 
   // Статистика
   elements.totalCount.textContent = terms.length;
-  if (searchQuery || currentCategory !== 'all') {
+  if (searchQuery || currentCategory !== 'all' || selectedLetter !== 'all') {
     elements.filteredStats.textContent = ` · ${tr.foundStats}${visible.length}`;
   } else {
     elements.filteredStats.textContent = '';
   }
 
   // Обновление алфавитной полосы
-  renderAlphabet(visible);
+  renderAlphabet();
 
   // Пустое состояние
   if (terms.length === 0) {
@@ -604,7 +654,7 @@ function renderTerms() {
 
   if (visible.length === 0) {
     elements.emptyState.classList.remove('hidden');
-    elements.emptyTitle.textContent = tr.noSearchResults(searchQuery || tr.categories[currentCategory]);
+    elements.emptyTitle.textContent = tr.noSearchResults(searchQuery || selectedLetter || tr.categories[currentCategory]);
     elements.emptyDesc.textContent = '';
     elements.termsList.innerHTML = '';
     return;
@@ -612,30 +662,13 @@ function renderTerms() {
 
   elements.emptyState.classList.add('hidden');
 
-  // Группировка по первой букве
-  const groups = {};
-  visible.forEach(item => {
-    const termName = (getCardContent(item, currentLang).data.term || '').trim();
-    const firstLetter = termName.charAt(0).toLocaleUpperCase(currentLang === 'ru' ? 'ru-RU' : 'en-US') || '#';
-    (groups[firstLetter] = groups[firstLetter] || []).push(item);
-  });
-
-  const sortedLetters = Object.keys(groups).sort((a, b) => a.localeCompare(b, currentLang));
-
-  elements.termsList.innerHTML = sortedLetters.map(letter => {
-    const cardsHtml = groups[letter].map(createTermCardHtml).join('');
-    return `
-      <section class="letter-section" id="letter-${letter}">
-        <div class="letter-heading">
-          <span>${letter}</span>
-          <span class="letter-count-badge">${groups[letter].length}</span>
-        </div>
-        <div class="terms-cards-grid">
-          ${cardsHtml}
-        </div>
-      </section>
-    `;
-  }).join('');
+  // Карточки выводятся единой красивой сеткой рядышком
+  const cardsHtml = visible.map(createTermCardHtml).join('');
+  elements.termsList.innerHTML = `
+    <div class="terms-cards-grid">
+      ${cardsHtml}
+    </div>
+  `;
 }
 
 function createTermCardHtml(item) {
@@ -917,14 +950,17 @@ function handleAuthorLogin() {
 }
 
 function updateAuthorState() {
+  const backupActions = document.getElementById('backupActions');
   if (isAuthor) {
     elements.openAddBtn.classList.remove('hidden');
     elements.authorStatusBadge.classList.remove('hidden');
     elements.authorBtn.classList.add('hidden');
+    if (backupActions) backupActions.classList.remove('hidden');
   } else {
     elements.openAddBtn.classList.add('hidden');
     elements.authorStatusBadge.classList.add('hidden');
     elements.authorBtn.classList.remove('hidden');
+    if (backupActions) backupActions.classList.add('hidden');
   }
   renderTerms();
 }
@@ -936,6 +972,7 @@ function initEventListeners() {
     const btn = e.target.closest('button');
     if (!btn || !btn.dataset.lang) return;
     currentLang = btn.dataset.lang;
+    selectedLetter = 'all'; // сбрасываем фильтр по букве при смене языка
     localStorage.setItem('econ_lang', currentLang);
     renderAll();
   });
@@ -975,15 +1012,25 @@ function initEventListeners() {
     renderTerms();
   });
 
-  // Клик по букве в алфавитном навигаторе
-  elements.alphabetRail.addEventListener('click', (e) => {
-    const btn = e.target.closest('.rail-letter.active');
-    if (!btn) return;
-    const letter = btn.dataset.letter;
-    const targetEl = document.getElementById('letter-' + letter);
-    if (targetEl) {
-      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Горизонтальная прокрутка алфавита колесиком мыши
+  elements.alphabetRail.addEventListener('wheel', (e) => {
+    if (e.deltaY !== 0) {
+      e.preventDefault();
+      elements.alphabetRail.scrollLeft += e.deltaY;
     }
+  }, { passive: false });
+
+  // Клик по букве в алфавитном навигаторе (фильтрация по букве)
+  elements.alphabetRail.addEventListener('click', (e) => {
+    const btn = e.target.closest('.letter-filter-btn');
+    if (!btn || btn.disabled) return;
+    const letter = btn.dataset.letter;
+    if (letter === 'all' || selectedLetter === letter) {
+      selectedLetter = 'all';
+    } else {
+      selectedLetter = letter;
+    }
+    renderTerms();
   });
 
   // Клик по карточкам (Редактирование / Удаление для автора)

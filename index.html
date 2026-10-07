@@ -140,13 +140,20 @@
         </button>
       </div>
 
-      <!-- Строка статистики и быстрого экспорта/импорта -->
+      <!-- Горизонтальный алфавитный фильтр (без вертикального скролла) -->
+      <div class="alphabet-filter-wrap" aria-label="Фильтр по алфавиту">
+        <div class="alphabet-bar" id="alphabetRail">
+          <!-- Буквы генерируются через JS -->
+        </div>
+      </div>
+
+      <!-- Строка статистики (экспорт/импорт скрыты для обычных посетителей) -->
       <div class="stats-bar">
         <div class="stats-count" id="statsCount">
           Всего терминов: <strong id="totalCount">0</strong>
           <span id="filteredStats" class="filtered-stats"></span>
         </div>
-        <div class="backup-actions">
+        <div class="backup-actions hidden" id="backupActions">
           <button type="button" class="btn-text-action" id="exportBtn" title="Экспорт базы в JSON">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -168,37 +175,26 @@
       </div>
     </section>
 
-    <!-- Основная сетка: Алфавитный навигатор + Карточки -->
-    <div class="content-grid">
+    <!-- Основная лента карточек (во всю ширину) -->
+    <main class="terms-feed" id="termsFeed">
       
-      <!-- Алфавитная полоса (Sticky Rail) -->
-      <aside class="alphabet-rail" aria-label="Алфавитный указатель">
-        <div class="alphabet-inner" id="alphabetRail">
-          <!-- Буквы генерируются через JS -->
+      <!-- Заглушка, когда терминов нет (Empty State) -->
+      <div class="empty-state hidden" id="emptyState">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/>
+            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+            <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/>
+            <path d="M2 7h20"/>
+          </svg>
         </div>
-      </aside>
+        <h3 id="emptyTitle">В словаре пока нет записей</h3>
+        <p id="emptyDesc">Словарь ожидает наполнения терминами от автора.</p>
+      </div>
 
-      <!-- Контейнер карточек терминов -->
-      <main class="terms-feed" id="termsFeed">
-        
-        <!-- Заглушка, когда терминов нет (Empty State) -->
-        <div class="empty-state" id="emptyState">
-          <div class="empty-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/>
-              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-              <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/>
-              <path d="M2 7h20"/>
-            </svg>
-          </div>
-          <h3 id="emptyTitle">В словаре пока нет записей</h3>
-          <p id="emptyDesc">Словарь ожидает наполнения терминами от автора.</p>
-        </div>
-
-        <!-- Сюда вставляются группы и карточки через JS -->
-        <div class="terms-list" id="termsList"></div>
-      </main>
-    </div>
+      <!-- Сюда вставляются карточки сеткой через JS -->
+      <div class="terms-list" id="termsList"></div>
+    </main>
   </div>
 
   <!-- Футер сайта со скрытым входом для автора -->
@@ -210,7 +206,7 @@
       <div class="footer-meta">
         <span class="footer-hint">Поиск: <kbd>/</kbd></span>
         
-        <!-- Замаскированная кнопка входа автора (выглядит как незаметная замочная скважина/точка) -->
+        <!-- Замаскированная кнопка входа автора -->
         <button type="button" class="secret-author-trigger" id="authorBtn" title="Служебный доступ" aria-label="Вход для автора">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
@@ -337,16 +333,15 @@
 
   <!-- ============================================================
        МОДАЛЬНОЕ ОКНО: АВТОРИЗАЦИЯ АВТОРА
-       (Вызывается кликом по скрытому замочку в футере или Ctrl+Shift+A)
        ============================================================ -->
   <dialog class="modal-dialog modal-sm" id="authorDialog">
     <div class="modal-container">
       <div class="modal-header">
-        <h2 class="modal-title">Панель управления</h2>
+        <h2 class="modal-title" id="authorDialogTitle">Панель управления</h2>
         <button type="button" class="modal-close" id="closeAuthorDialogBtn" aria-label="Закрыть">✕</button>
       </div>
       <div class="modal-body">
-        <p class="dialog-hint">Введите код доступа для управления словарем:</p>
+        <p class="dialog-hint" id="authorDialogHint">Введите код доступа для управления словарем:</p>
         <div class="form-group" id="authorPassGroup">
           <input type="password" id="authorPassInput" placeholder="Код доступа..." autocomplete="current-password">
           <span class="field-error" id="authorPassError">Неверный код доступа</span>
@@ -405,7 +400,7 @@
   <!-- Всплывающее уведомление (Toast) -->
   <div class="toast-notification" id="toastMessage" role="status" aria-live="polite"></div>
 
-  <!-- Подключение вашего скрипта -->
+  <!-- Подключение клиентского скрипта -->
   <script src="script.js"></script>
 </body>
 </html>
