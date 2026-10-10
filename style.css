@@ -1,6 +1,5 @@
-/* ============================================================
-   ДИЗАЙН-СИСТЕМА И БАЗОВЫЕ ПЕРЕМЕННЫЕ
-   ============================================================ */
+/* ДИЗАЙН-СИСТЕМА И БАЗОВЫЕ ПЕРЕМЕННЫЕ */
+
 :root {
   --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -61,9 +60,8 @@
   --transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ============================================================
-   ТЁМНАЯ ТЕМА (НОЧНОЙ РЕЖИМ)
-   ============================================================ */
+/* ТЁМНАЯ ТЕМА (НОЧНОЙ РЕЖИМ) */
+
 [data-theme="dark"] {
   --bg-app: #0B0F17;
   --bg-surface: #131B2E;
@@ -182,9 +180,7 @@ button {
   display: none !important;
 }
 
-/* ============================================================
-   НАВБАР / ШАПКА
-   ============================================================ */
+/* НАВБАР / ШАПКА */
 .navbar {
   background: var(--navbar-bg);
   backdrop-filter: blur(12px);
@@ -368,9 +364,8 @@ button {
   background: var(--primary-light);
 }
 
-/* ============================================================
-   ПАНЕЛЬ УПРАВЛЕНИЯ (ПОИСК, КАТЕГОРИИ, СТАТЫ)
-   ============================================================ */
+/* ПАНЕЛЬ УПРАВЛЕНИЯ (ПОИСК, КАТЕГОРИИ, СТАТЫ) */
+
 .main-layout {
   padding-top: 24px;
   padding-bottom: 60px;
@@ -455,7 +450,8 @@ button {
   pointer-events: none;
 }
 
-/* Категории (Чипсы) */
+/* Категории */
+
 .categories-filter {
   display: flex;
   align-items: center;
@@ -517,6 +513,7 @@ button {
 }
 
 /* Строка статистики */
+
 .stats-bar {
   display: flex;
   align-items: center;
@@ -567,9 +564,8 @@ button {
   display: none;
 }
 
-/* ============================================================
-   ГОРИЗОНТАЛЬНЫЙ АЛФАВИТНЫЙ ФИЛЬТР
-   ============================================================ */
+/* ГОРИЗОНТАЛЬНЫЙ АЛФАВИТНЫЙ ФИЛЬТР */
+
 .alphabet-filter-wrap {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
@@ -583,8 +579,8 @@ button {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: nowrap;          /* Запрет переноса на новую строку */
-  overflow-x: auto;           /* Горизонтальный скролл */
+  flex-wrap: nowrap;
+  overflow-x: auto;
   scrollbar-width: none;      /* Скрываем полосу в Firefox */
   -ms-overflow-style: none;   /* Скрываем полосу в IE/Edge */
   padding: 2px 0;
@@ -605,13 +601,13 @@ button {
   font-family: var(--font-mono);
   font-size: 0.825rem;
   font-weight: 600;
-  color: var(--text-muted);   /* Все буквы одинакового цвета по умолчанию */
+  color: var(--text-muted);
   background: var(--bg-subtle);
   border: 1px solid transparent;
   transition: var(--transition);
   cursor: pointer;
   user-select: none;
-  flex-shrink: 0;             /* Не сжимать кнопки */
+  flex-shrink: 0;
 }
 
 .letter-filter-btn:hover {
@@ -634,12 +630,12 @@ button {
 }
 
 /* Лента терминов на всю ширину страницы */
+
 .terms-feed {
   width: 100%;
   min-width: 0;
 }
 
-/* Группы букв */
 .letter-section {
   margin-bottom: 32px;
 }
@@ -667,13 +663,14 @@ button {
 }
 
 /* Сетка карточек терминов — стоят рядышком (2-3 колонки) */
+
 .terms-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
 }
 
-/* Сама карточка термина */
+/* карточка термина */
 .term-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
@@ -747,6 +744,7 @@ button {
 }
 
 /* Действия над карточкой (для автора) */
+
 .card-actions {
   display: flex;
   align-items: center;
@@ -780,6 +778,7 @@ button {
 }
 
 /* Определение */
+
 .card-definition {
   font-size: 0.925rem;
   color: var(--text-main);
@@ -788,6 +787,7 @@ button {
 }
 
 /* Пример / Заметка */
+
 .card-example {
   background: var(--bg-subtle);
   border-left: 3px solid var(--primary);
@@ -800,6 +800,7 @@ button {
 }
 
 /* Пустое состояние (Empty state) */
+
 .empty-state {
   text-align: center;
   padding: 60px 20px;
@@ -840,9 +841,7 @@ button {
   font-size: 0.9rem;
 }
 
-/* ============================================================
-   ФУТЕР САЙТА И СКРЫТЫЙ ВХОД АВТОРА
-   ============================================================ */
+/* ФУТЕР САЙТА И СКРЫТЫЙ ВХОД АВТОРА */
 .site-footer {
   border-top: 1px solid var(--border-color);
   background: var(--bg-surface);
@@ -881,6 +880,7 @@ button {
 }
 
 /* Замаскированная кнопка автора в футере */
+
 .secret-author-trigger {
   width: 20px;
   height: 20px;
@@ -904,6 +904,7 @@ button {
 }
 
 /* Статус активного автора */
+
 .author-status-badge {
   display: inline-flex;
   align-items: center;
@@ -924,9 +925,8 @@ button {
   font-size: 0.75rem;
 }
 
-/* ============================================================
-   МОДАЛЬНЫЕ ОКНА (NATIVE <dialog>)
-   ============================================================ */
+/* МОДАЛЬНЫЕ ОКНА (NATIVE <dialog>) */
+
 .modal-dialog {
   border: none;
   background: transparent;
@@ -999,6 +999,7 @@ button {
 }
 
 /* Вкладки языков в форме */
+
 .form-lang-tabs {
   display: flex;
   border-bottom: 1px solid var(--border-color);
@@ -1032,6 +1033,7 @@ button {
 }
 
 /* Поля формы */
+
 .modal-form {
   padding: 24px;
   display: flex;
@@ -1136,9 +1138,8 @@ button {
   margin-bottom: 14px;
 }
 
-/* ============================================================
-   ТРЕНАЖЁР КАРТОЧЕК (FLASHCARD 3D FLIP)
-   ============================================================ */
+/* ТРЕНАЖЁР КАРТОЧЕК (FLASHCARD 3D FLIP) */
+
 .modal-quiz {
   max-width: 620px;
 }
@@ -1249,9 +1250,8 @@ button {
   gap: 12px;
 }
 
-/* ============================================================
-   ВСПЛЫВАЮЩИЕ УВЕДОМЛЕНИЯ (TOAST)
-   ============================================================ */
+/* ВСПЛЫВАЮЩИЕ УВЕДОМЛЕНИЯ (TOAST) */
+
 .toast-notification {
   position: fixed;
   bottom: 24px;
@@ -1273,28 +1273,4 @@ button {
 .toast-notification.show {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* ============================================================
-   АДАПТИВНОСТЬ ПОД МОБИЛЬНЫЕ УСТРОЙСТВА
-   ============================================================ */
-@media (max-width: 768px) {
-  .navbar-inner {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .navbar-actions {
-    justify-content: space-between;
-  }
-
-  .terms-cards-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .footer-inner {
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
-  }
 }

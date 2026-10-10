@@ -5,12 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Словарь экономиста | Economics Hub</title>
 
-  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <!-- google fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="media.css">
 
   <script>
     // Мгновенное восстановление темы до отрисовки
@@ -223,10 +224,7 @@
     </div>
   </footer>
 
-  <!-- ============================================================
-       МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ТЕРМИНА
-       (Только для автора)
-       ============================================================ -->
+  <!-- МОДАЛЬНОЕ ОКНО: ДОБАВЛЕНИЕ / РЕДАКТИРОВАНИЕ ТЕРМИНА (Только для автора)-->
   <dialog class="modal-dialog" id="termDialog">
     <div class="modal-container">
       <div class="modal-header">
@@ -312,12 +310,12 @@
           <label for="inputCategory">Раздел экономики</label>
           <div class="custom-select-wrap">
             <select id="inputCategory">
-              <option value="micro">📊 Микроэкономика</option>
-              <option value="macro">🏛️ Макроэкономика</option>
-              <option value="finance">💰 Финансы и банкинг</option>
-              <option value="econometrics">📐 Эконометрика и статистика</option>
-              <option value="international">🌍 Международная экономика</option>
-              <option value="other">💡 Прочее / Общие понятия</option>
+              <option value="micro">Микроэкономика</option>
+              <option value="macro">Макроэкономика</option>
+              <option value="finance">Финансы и банкинг</option>
+              <option value="econometrics">Эконометрика и статистика</option>
+              <option value="international">Международная экономика</option>
+              <option value="other">Прочее / Общие понятия</option>
             </select>
           </div>
         </div>
@@ -331,9 +329,7 @@
     </div>
   </dialog>
 
-  <!-- ============================================================
-       МОДАЛЬНОЕ ОКНО: АВТОРИЗАЦИЯ АВТОРА
-       ============================================================ -->
+  <!-- МОДАЛЬНОЕ ОКНО: АВТОРИЗАЦИЯ АВТОРА -->
   <dialog class="modal-dialog modal-sm" id="authorDialog">
     <div class="modal-container">
       <div class="modal-header">
@@ -354,9 +350,7 @@
     </div>
   </dialog>
 
-  <!-- ============================================================
-       МОДАЛЬНОЕ ОКНО: ТРЕНАЖЁР КАРТОЧЕК (FLASHCARDS)
-       ============================================================ -->
+  <!-- МОДАЛЬНОЕ ОКНО: ТРЕНАЖЁР КАРТОЧЕК (FLASHCARDS)-->
   <dialog class="modal-dialog modal-quiz" id="quizDialog">
     <div class="modal-container">
       <div class="modal-header">

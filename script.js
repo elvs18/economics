@@ -1,9 +1,7 @@
-/*
- * СЛОВАРЬ ЭКОНОМИСТА (ECONOMICS HUB) — КЛИЕНТСКАЯ ЛОГИКА
- */
+/* СЛОВАРЬ ЭКОНОМИСТА (ECONOMICS HUB) — КЛИЕНТСКАЯ ЛОГИКА */
 
 // 1. КОНФИГУРАЦИЯ И СЕКРЕТНЫЙ КОД АВТОРА
-const PASSCODE = 'moh-econ-2026';
+const PASSCODE = 'samsueconomics';
 
 const RU_ALPHABET = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.split('');
 const LAT_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
@@ -363,7 +361,7 @@ function detectUserLanguage() {
   const browser = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
   if (browser.startsWith('ru') || browser.startsWith('be') || browser.startsWith('uk')) return 'ru';
   if (browser.startsWith('uz')) return 'uz';
-  return 'en'; // По умолчанию для остальных — международный английский
+  return 'en';
 }
 
 // 5. СОСТОЯНИЕ ПРИЛОЖЕНИЯ
