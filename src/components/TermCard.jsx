@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
-import { Copy, Check, Bookmark, Calendar } from 'lucide-react';
+import { Copy, Check, Bookmark } from 'lucide-react';
 
 export default function TermCard({ term }) {
   const { lang, getCategoryLabel, t } = useLanguage();
@@ -26,16 +26,6 @@ export default function TermCard({ term }) {
     }).catch(() => {
       // fallback
     });
-  };
-
-  const formatDate = (isoStr) => {
-    if (!isoStr) return '';
-    try {
-      const d = new Date(isoStr);
-      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-    } catch {
-      return '';
-    }
   };
 
   return (
@@ -79,15 +69,6 @@ export default function TermCard({ term }) {
             <span className="example-label">{t('exampleLabel')}</span>
           </div>
           <p className="example-body">{example}</p>
-        </div>
-      )}
-
-      {term.dateAdded && (
-        <div className="term-card-footer">
-          <span className="term-date">
-            <Calendar size={12} />
-            <span>{formatDate(term.dateAdded)}</span>
-          </span>
         </div>
       )}
     </article>

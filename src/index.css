@@ -90,6 +90,22 @@ html, body {
   height: 100%;
 }
 
+/* Скрытие полосы прокрутки (скроллбара) для всей страницы и контейнеров */
+html,
+body,
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE & Edge */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0;
+  height: 0;
+}
+
 body {
   font-family: var(--font-main);
   background-color: var(--bg-app);
@@ -659,7 +675,8 @@ button {
   border-left: 3px solid var(--primary);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   padding: 10px 14px;
-  margin-bottom: 14px;
+  margin-bottom: 0;
+  margin-top: auto;
 }
 
 .example-header {
@@ -685,24 +702,6 @@ button {
   font-size: 0.85rem;
   color: var(--text-muted);
   line-height: 1.45;
-}
-
-.term-card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 10px;
-  margin-top: auto;
-}
-
-.term-date {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-family: var(--font-mono);
-  font-size: 0.725rem;
-  color: var(--text-dim);
 }
 
 /* ============================================================
