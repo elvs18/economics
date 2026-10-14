@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useToast } from '../context/ToastContext';
-import { Copy, Check, Bookmark } from 'lucide-react';
+import { Copy, Check, Bookmark, ChevronRight } from 'lucide-react';
 
-export default function TermCard({ term }) {
+export default function TermCard({ term, onSelect }) {
   const { lang, getCategoryLabel, t } = useLanguage();
   const { showToast } = useToast();
   const [copied, setCopied] = useState(false);
@@ -17,7 +17,8 @@ export default function TermCard({ term }) {
   // Other languages for preview pills
   const otherLangs = ['ru', 'en', 'uz'].filter(l => l !== lang && term[l]?.term);
 
-  const handleCopy = () => {
+  const handleCopy = (e) => {
+    e.stopPropagation();
     const textToCopy = `${termTitle}\n\n${definition}${example ? `\n\nПример/Формула: ${example}` : ''}`;
     navigator.clipboard.writeText(textToCopy).then(() => {
       setCopied(true);
@@ -28,22 +29,48 @@ export default function TermCard({ term }) {
     });
   };
 
+  const handleCardClick = () => {
+    if (onSelect) {
+      onSelect(term);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleCardClick();
+    }
+  };
+
   return (
-    <article className="term-card" id={`term-${term.id}`}>
+    <article
+      className="term-card"
+      id={`term-${term.id}`}
+      onClick={handleCardClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
+      role="button"
+      aria-label={`${termTitle} — ${t('viewDetails') || 'Подробнее'}`}
+    >
       <div className="term-card-header">
         <span className={`category-tag category-tag-${term.category || 'other'}`}>
           {getCategoryLabel(term.category || 'other')}
         </span>
 
-        <button
-          type="button"
-          className="card-action-btn copy-btn"
-          onClick={handleCopy}
-          title="Копировать термин и определение"
-          aria-label="Copy term content"
-        >
-          {copied ? <Check size={16} className="text-success" /> : <Copy size={16} />}
-        </button>
+        <div className="term-card-header-actions">
+          <button
+            type="button"
+            className="card-action-btn copy-btn"
+            onClick={handleCopy}
+            title={t('copySuccess') || 'Копировать'}
+            aria-label="Copy term content"
+          >
+            {copied ? <Check size={16} className="text-success" /> : <Copy size={16} />}
+          </button>
+          <span className="term-card-chevron" aria-hidden="true">
+            <ChevronRight size={18} />
+          </span>
+        </div>
       </div>
 
       <h3 className="term-card-title">{termTitle}</h3>

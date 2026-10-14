@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function Footer() {
   const { t } = useLanguage();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, openLoginModal } = useAuth();
 
   return (
     <footer className="site-footer">
@@ -20,22 +20,28 @@ export default function Footer() {
         </div>
 
         <div className="footer-right">
-          <Link
-            to="/admin"
-            className="footer-admin-link"
-            title={isAuthenticated ? 'Перейти в панель автора' : 'Вход для автора словаря'}
-          >
-            {isAuthenticated ? (
+          {isAuthenticated ? (
+            <Link
+              to="/admin"
+              className="footer-admin-link"
+              title="Перейти в панель автора"
+            >
               <span className="admin-status-pill">
                 <ShieldCheck size={14} />
                 <span>Автор: активен</span>
               </span>
-            ) : (
-              <span className="admin-secret-trigger" aria-label="Author Access">
-                <Lock size={14} />
-              </span>
-            )}
-          </Link>
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className="admin-secret-trigger"
+              onClick={openLoginModal}
+              title="Вход для автора словаря"
+              aria-label="Author Access"
+            >
+              <Lock size={14} />
+            </button>
+          )}
         </div>
       </div>
     </footer>

@@ -7,11 +7,16 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return sessionStorage.getItem('economics_admin_auth') === 'true';
   });
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+
+  const openLoginModal = () => setIsLoginModalOpen(true);
+  const closeLoginModal = () => setIsLoginModalOpen(false);
 
   const login = (passcode) => {
     if (passcode.trim().toLowerCase() === ADMIN_PASSCODE.toLowerCase()) {
       sessionStorage.setItem('economics_admin_auth', 'true');
       setIsAuthenticated(true);
+      setIsLoginModalOpen(false);
       return true;
     }
     return false;
@@ -23,7 +28,16 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        login,
+        logout,
+        isLoginModalOpen,
+        openLoginModal,
+        closeLoginModal
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

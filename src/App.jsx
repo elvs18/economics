@@ -9,6 +9,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import DictionaryPage from './pages/DictionaryPage';
 import AdminPage from './pages/AdminPage';
+import AdminLoginModal from './components/admin/AdminLoginModal';
 
 export default function App() {
   const [isQuizOpen, setIsQuizOpen] = useState(false);
@@ -46,6 +47,7 @@ export default function App() {
                     </Routes>
                   </div>
                   <Footer />
+                  <AdminLoginModal />
                 </div>
               </HashRouter>
             </ToastProvider>

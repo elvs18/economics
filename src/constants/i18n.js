@@ -17,6 +17,13 @@ export const I18N = {
     category: 'Категория',
     exampleLabel: 'Пример применения / Формула',
     dateLabel: 'Добавлено',
+    viewDetails: 'Подробнее',
+    detailsTitle: 'Карточка термина',
+    languagesLabel: 'На других языках',
+    copyTermBtn: 'Копировать всё',
+    definitionLabel: 'Определение',
+    termNavPrev: 'Предыдущий',
+    termNavNext: 'Следующий',
 
     // Quiz
     quizTitle: 'Тренажёр флеш-карточек',
@@ -112,6 +119,13 @@ export const I18N = {
     category: 'Category',
     exampleLabel: 'Practical Example / Formula',
     dateLabel: 'Added',
+    viewDetails: 'Details',
+    detailsTitle: 'Term Details',
+    languagesLabel: 'In other languages',
+    copyTermBtn: 'Copy all',
+    definitionLabel: 'Definition',
+    termNavPrev: 'Previous',
+    termNavNext: 'Next',
 
     // Quiz
     quizTitle: 'Flashcard Study Trainer',
@@ -207,6 +221,13 @@ export const I18N = {
     category: 'Boʻlim',
     exampleLabel: 'Amaliy misol / Formula',
     dateLabel: 'Qoʻshilgan sana',
+    viewDetails: 'Batafsil',
+    detailsTitle: 'Atama maʼlumotlari',
+    languagesLabel: 'Boshqa tillarda',
+    copyTermBtn: 'Hammasini nusxalash',
+    definitionLabel: 'Taʼrif',
+    termNavPrev: 'Oldingi atama',
+    termNavNext: 'Keyingi atama',
 
     // Quiz
     quizTitle: 'Flesh-kartalar trenajyori',

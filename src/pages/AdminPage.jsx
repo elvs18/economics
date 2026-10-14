@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useTerms } from '../context/TermsContext';
@@ -8,8 +8,6 @@ import { CATEGORIES } from '../constants/categories';
 import TermModal from '../components/admin/TermModal';
 import ImportModal from '../components/admin/ImportModal';
 import {
-  Lock,
-  Shield,
   LogOut,
   ArrowLeft,
   Plus,
@@ -20,22 +18,17 @@ import {
   Edit2,
   Trash2,
   CheckCircle2,
-  AlertCircle,
   Layers,
   Globe2
 } from 'lucide-react';
 
 export default function AdminPage() {
-  const { isAuthenticated, login, logout } = useAuth();
+  const { isAuthenticated, logout, openLoginModal } = useAuth();
   const { lang, getCategoryLabel, t } = useLanguage();
   const { terms, addTerm, updateTerm, deleteTerm, importTerms, resetTerms, exportTermsAsJson } = useTerms();
   const { showToast } = useToast();
 
-  // Login form state
-  const [passcode, setPasscode] = useState('');
-  const [loginError, setLoginError] = useState(false);
-
-  // Admin table state
+  // Admin filter & search state
   const [adminSearch, setAdminSearch] = useState('');
   const [adminCategory, setAdminCategory] = useState('all');
 
@@ -45,17 +38,12 @@ export default function AdminPage() {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
-  // Handle Login
-  const handleLoginSubmit = (e) => {
-    e.preventDefault();
-    if (login(passcode)) {
-      setLoginError(false);
-      setPasscode('');
-      showToast('Вход в панель администратора выполнен', 'success');
-    } else {
-      setLoginError(true);
+  // If unauthenticated, open the popup modal over the dictionary and redirect to /
+  useEffect(() => {
+    if (!isAuthenticated) {
+      openLoginModal();
     }
-  };
+  }, [isAuthenticated, openLoginModal]);
 
   // KPI Calculations
   const stats = useMemo(() => {
@@ -67,7 +55,7 @@ export default function AdminPage() {
     return { total, completeness, usedCategories };
   }, [terms]);
 
-  // Filtered terms for admin table
+  // Filtered terms for admin
   const filteredTerms = useMemo(() => {
     return terms.filter(item => {
       if (adminCategory !== 'all' && item.category !== adminCategory) {
@@ -128,68 +116,11 @@ export default function AdminPage() {
     }
   };
 
-  // ==========================================
-  // VIEW 1: UNAUTHENTICATED (PASSCODE LOGIN)
-  // ==========================================
+  // If not authenticated, redirect to home and let the modal popup over the home interface
   if (!isAuthenticated) {
-    return (
-      <main className="admin-login-view">
-        <div className="login-card">
-          <div className="login-card-header">
-            <div className="lock-icon-badge">
-              <Lock size={28} />
-            </div>
-            <h1 className="login-title">{t('adminTitle')}</h1>
-            <p className="login-subtitle">{t('adminSub')}</p>
-          </div>
-
-          <form onSubmit={handleLoginSubmit} className="login-form">
-            {loginError && (
-              <div className="form-error-alert">
-                <AlertCircle size={16} />
-                <span>{t('adminPassError')}</span>
-              </div>
-            )}
-
-            <div className="form-group">
-              <label htmlFor="admin-pass-input" className="form-label">
-                {t('adminPassPrompt')}
-              </label>
-              <input
-                id="admin-pass-input"
-                type="password"
-                className="form-input"
-                placeholder={t('adminPassPh')}
-                value={passcode}
-                onChange={e => {
-                  setPasscode(e.target.value);
-                  setLoginError(false);
-                }}
-                autoFocus
-                required
-              />
-            </div>
-
-            <button type="submit" className="btn btn-primary btn-block">
-              <Shield size={16} />
-              <span>{t('adminLoginBtn')}</span>
-            </button>
-          </form>
-
-          <div className="login-card-footer">
-            <Link to="/" className="back-link">
-              <ArrowLeft size={16} />
-              <span>{t('backToSite')}</span>
-            </Link>
-          </div>
-        </div>
-      </main>
-    );
+    return <Navigate to="/" replace />;
   }
 
-  // ==========================================
-  // VIEW 2: AUTHENTICATED ADMIN DASHBOARD
-  // ==========================================
   const termToDelete = terms.find(t => t.id === deleteConfirmId);
 
   return (
@@ -200,18 +131,14 @@ export default function AdminPage() {
           <div className="topbar-left">
             <Link to="/" className="btn btn-secondary btn-sm back-site-btn">
               <ArrowLeft size={16} />
-              <span>{t('backToSite')}</span>
+              <span className="back-btn-text">{t('backToSite')}</span>
             </Link>
-            <div className="admin-badge-tag">
-              <Shield size={16} />
-              <span>Admin Studio</span>
-            </div>
           </div>
 
           <div className="topbar-right">
             <button
               type="button"
-              className="btn btn-outline-danger btn-sm"
+              className="btn btn-outline-danger btn-sm logout-btn"
               onClick={logout}
               title={t('adminLogout')}
             >
@@ -274,6 +201,7 @@ export default function AdminPage() {
               className="form-select admin-category-select"
               value={adminCategory}
               onChange={e => setAdminCategory(e.target.value)}
+              aria-label={t('category')}
             >
               {CATEGORIES.map(cat => (
                 <option key={cat.id} value={cat.id}>
@@ -286,36 +214,38 @@ export default function AdminPage() {
           <div className="controls-buttons-row">
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn btn-primary add-term-main-btn"
               onClick={handleOpenAdd}
             >
               <Plus size={16} />
               <span>{t('addTermBtn')}</span>
             </button>
 
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={exportTermsAsJson}
-              title={t('exportBtn')}
-            >
-              <Download size={16} />
-              <span>{t('exportBtn')}</span>
-            </button>
+            <div className="controls-secondary-group">
+              <button
+                type="button"
+                className="btn btn-secondary export-btn"
+                onClick={exportTermsAsJson}
+                title={t('exportBtn')}
+              >
+                <Download size={16} />
+                <span>{t('exportBtn')}</span>
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-secondary import-btn"
+                onClick={() => setIsImportModalOpen(true)}
+                title={t('importBtn')}
+              >
+                <Upload size={16} />
+                <span>{t('importBtn')}</span>
+              </button>
+            </div>
 
             <button
               type="button"
-              className="btn btn-secondary"
-              onClick={() => setIsImportModalOpen(true)}
-              title={t('importBtn')}
-            >
-              <Upload size={16} />
-              <span>{t('importBtn')}</span>
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-outline-danger"
+              className="btn btn-outline-danger reset-btn-admin"
               onClick={handleResetToDefaults}
               title={t('resetDefaultsBtn')}
             >
@@ -325,8 +255,8 @@ export default function AdminPage() {
           </div>
         </section>
 
-        {/* Data Table */}
-        <section className="admin-table-card">
+        {/* Desktop Data Table (Visible on screens > 768px) */}
+        <section className="admin-table-card desktop-table-view">
           <div className="table-responsive">
             <table className="admin-table">
               <thead>
@@ -406,6 +336,81 @@ export default function AdminPage() {
               </tbody>
             </table>
           </div>
+        </section>
+
+        {/* Mobile Admin Cards List (Visible on screens <= 768px) */}
+        <section className="admin-mobile-cards-list mobile-cards-view">
+          {filteredTerms.length > 0 ? (
+            filteredTerms.map(term => {
+              const currentLangTitle = term[lang]?.term || term.ru?.term || term.en?.term || term.uz?.term || '—';
+              return (
+                <article key={term.id} className="admin-mobile-term-card">
+                  <div className="admin-mobile-card-header">
+                    <span className={`category-tag category-tag-${term.category || 'other'}`}>
+                      {getCategoryLabel(term.category || 'other')}
+                    </span>
+                    <div className="admin-mobile-card-actions">
+                      <button
+                        type="button"
+                        className="btn-icon-action edit-btn"
+                        onClick={() => handleOpenEdit(term)}
+                        title={t('actionEdit')}
+                        aria-label={`Редактировать ${currentLangTitle}`}
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-icon-action delete-btn"
+                        onClick={() => setDeleteConfirmId(term.id)}
+                        title={t('actionDelete')}
+                        aria-label={`Удалить ${currentLangTitle}`}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <h3 className="admin-mobile-card-title">{currentLangTitle}</h3>
+
+                  <div className="admin-mobile-langs-grid">
+                    {term.ru?.term && (
+                      <div className="admin-mobile-lang-chip">
+                        <span className="lang-code-pill">RU</span>
+                        <span className="lang-term-text">{term.ru.term}</span>
+                      </div>
+                    )}
+                    {term.en?.term && (
+                      <div className="admin-mobile-lang-chip">
+                        <span className="lang-code-pill">EN</span>
+                        <span className="lang-term-text">{term.en.term}</span>
+                      </div>
+                    )}
+                    {term.uz?.term && (
+                      <div className="admin-mobile-lang-chip">
+                        <span className="lang-code-pill">UZ</span>
+                        <span className="lang-term-text">{term.uz.term}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {term.dateAdded && (
+                    <div className="admin-mobile-card-footer">
+                      <span className="admin-mobile-date">
+                        {new Date(term.dateAdded).toLocaleDateString()}
+                      </span>
+                    </div>
+                  )}
+                </article>
+              );
+            })
+          ) : (
+            <div className="empty-state">
+              <p className="empty-desc">
+                {t('noSearchResults', adminSearch || adminCategory)}
+              </p>
+            </div>
+          )}
         </section>
       </div>
 

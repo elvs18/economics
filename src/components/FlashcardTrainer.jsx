@@ -1,12 +1,51 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { X, ArrowLeft, ArrowRight, Shuffle, RotateCcw } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, Shuffle, RotateCcw, Globe, ChevronDown, Check } from 'lucide-react';
 
 export default function FlashcardTrainer({ isOpen, onClose, terms = [] }) {
-  const { lang, getCategoryLabel, t } = useLanguage();
+  const { lang, setLang, getCategoryLabel, t } = useLanguage();
   const [deck, setDeck] = useState(() => [...terms]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
+  const langDropdownRef = useRef(null);
+
+  const languages = [
+    { code: 'ru', label: 'Русский', short: 'RU' },
+    { code: 'en', label: 'English', short: 'EN' },
+    { code: 'uz', label: 'Oʻzbekcha', short: 'UZ' }
+  ];
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    if (!isLangDropdownOpen) return;
+
+    const handleClickOutside = (e) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target)) {
+        setIsLangDropdownOpen(false);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+      document.addEventListener('touchend', handleClickOutside);
+    }, 10);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener('touchend', handleClickOutside);
+    };
+  }, [isLangDropdownOpen]);
+
+  const handleSelectLang = (code, e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setLang(code);
+    setIsLangDropdownOpen(false);
+  };
 
   const handleNext = useCallback(() => {
     if (deck.length === 0) return;
@@ -65,21 +104,65 @@ export default function FlashcardTrainer({ isOpen, onClose, terms = [] }) {
   return (
     <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
       <div className="modal-container quiz-modal-container" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
+        <div className="modal-header quiz-modal-header">
           <div className="quiz-header-info">
             <h3 className="modal-title">{t('quizTitle')}</h3>
-            <span className="quiz-progress-badge">
-              {t('quizCardProgress', currentIndex + 1, deck.length)}
-            </span>
           </div>
-          <button
-            type="button"
-            className="icon-btn modal-close-btn"
-            onClick={onClose}
-            aria-label={t('close')}
-          >
-            <X size={20} />
-          </button>
+
+          <div className="quiz-header-actions">
+            {/* Language Dropdown Curtain ("Шторка") */}
+            <div className="lang-dropdown-wrapper" ref={langDropdownRef}>
+              <button
+                type="button"
+                className={`lang-dropdown-trigger ${isLangDropdownOpen ? 'active' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsLangDropdownOpen(prev => !prev);
+                }}
+                aria-expanded={isLangDropdownOpen}
+                aria-haspopup="listbox"
+                title="Выбрать язык карточек / Select language"
+              >
+                <Globe size={13} className="lang-globe-icon" />
+                <span className="lang-current-code">{lang.toUpperCase()}</span>
+                <ChevronDown
+                  size={12}
+                  className={`lang-chevron-icon ${isLangDropdownOpen ? 'rotated' : ''}`}
+                />
+              </button>
+
+              {isLangDropdownOpen && (
+                <div className="lang-dropdown-curtain" role="listbox">
+                  {languages.map((item) => (
+                    <button
+                      key={item.code}
+                      type="button"
+                      role="option"
+                      aria-selected={lang === item.code}
+                      className={`lang-dropdown-item ${lang === item.code ? 'selected' : ''}`}
+                      onClick={(e) => handleSelectLang(item.code, e)}
+                      onPointerDown={(e) => handleSelectLang(item.code, e)}
+                    >
+                      <span className="lang-item-code">{item.short}</span>
+                      <span className="lang-item-name">{item.label}</span>
+                      {lang === item.code && (
+                        <Check size={14} className="lang-item-check" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <button
+              type="button"
+              className="icon-btn modal-close-btn"
+              onClick={onClose}
+              aria-label={t('close')}
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* 3D Flip Card */}

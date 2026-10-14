@@ -78,107 +78,112 @@ export default function TermModal({ isOpen, onClose, onSave, termToEdit }) {
         </div>
 
         <form onSubmit={handleSubmit} className="term-modal-form">
-          {error && <div className="form-error-alert">{error}</div>}
+          <div className="term-modal-body">
+            {error && <div className="form-error-alert">{error}</div>}
 
-          {/* Category selection */}
-          <div className="form-group">
-            <label className="form-label" htmlFor="term-category-select">
-              {t('formCategory')}
-            </label>
-            <select
-              id="term-category-select"
-              className="form-select"
-              value={category}
-              onChange={e => setCategory(e.target.value)}
-            >
-              {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
-                <option key={cat.id} value={cat.id}>
-                  {getCategoryLabel(cat.id)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Language Tabs */}
-          <div className="lang-tabs-bar" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'ru'}
-              className={`lang-tab-btn ${activeTab === 'ru' ? 'active' : ''} ${formData.ru.term ? 'filled' : ''}`}
-              onClick={() => setActiveTab('ru')}
-            >
-              <Globe size={14} />
-              <span>{t('formLangRu')}</span>
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'en'}
-              className={`lang-tab-btn ${activeTab === 'en' ? 'active' : ''} ${formData.en.term ? 'filled' : ''}`}
-              onClick={() => setActiveTab('en')}
-            >
-              <Globe size={14} />
-              <span>{t('formLangEn')}</span>
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activeTab === 'uz'}
-              className={`lang-tab-btn ${activeTab === 'uz' ? 'active' : ''} ${formData.uz.term ? 'filled' : ''}`}
-              onClick={() => setActiveTab('uz')}
-            >
-              <Globe size={14} />
-              <span>{t('formLangUz')}</span>
-            </button>
-          </div>
-
-          {/* Tab Content for selected language */}
-          <div className="tab-panel-content">
+            {/* Category selection */}
             <div className="form-group">
-              <label className="form-label" htmlFor={`term-title-${activeTab}`}>
-                {t('formTermLabel')} ({activeTab.toUpperCase()})
+              <label className="form-label" htmlFor="term-category-select">
+                {t('formCategory')}
               </label>
-              <input
-                id={`term-title-${activeTab}`}
-                type="text"
-                className="form-input"
-                placeholder={t('formTermPh')}
-                value={formData[activeTab].term}
-                onChange={e => handleFieldChange(activeTab, 'term', e.target.value)}
-              />
+              <select
+                id="term-category-select"
+                className="form-select"
+                value={category}
+                onChange={e => setCategory(e.target.value)}
+              >
+                {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+                  <option key={cat.id} value={cat.id}>
+                    {getCategoryLabel(cat.id)}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor={`term-def-${activeTab}`}>
-                {t('formDefLabel')} ({activeTab.toUpperCase()})
-              </label>
-              <textarea
-                id={`term-def-${activeTab}`}
-                rows={4}
-                className="form-textarea"
-                placeholder={t('formDefPh')}
-                value={formData[activeTab].definition}
-                onChange={e => handleFieldChange(activeTab, 'definition', e.target.value)}
-              />
+            {/* Language Tabs - responsive with short code for mobile */}
+            <div className="lang-tabs-bar" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'ru'}
+                className={`lang-tab-btn ${activeTab === 'ru' ? 'active' : ''} ${formData.ru.term ? 'filled' : ''}`}
+                onClick={() => setActiveTab('ru')}
+              >
+                <Globe size={13} />
+                <span className="lang-tab-full">{t('formLangRu')}</span>
+                <span className="lang-tab-short">RU</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'en'}
+                className={`lang-tab-btn ${activeTab === 'en' ? 'active' : ''} ${formData.en.term ? 'filled' : ''}`}
+                onClick={() => setActiveTab('en')}
+              >
+                <Globe size={13} />
+                <span className="lang-tab-full">{t('formLangEn')}</span>
+                <span className="lang-tab-short">EN</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'uz'}
+                className={`lang-tab-btn ${activeTab === 'uz' ? 'active' : ''} ${formData.uz.term ? 'filled' : ''}`}
+                onClick={() => setActiveTab('uz')}
+              >
+                <Globe size={13} />
+                <span className="lang-tab-full">{t('formLangUz')}</span>
+                <span className="lang-tab-short">UZ</span>
+              </button>
             </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor={`term-ex-${activeTab}`}>
-                {t('formExLabel')} ({activeTab.toUpperCase()})
-              </label>
-              <textarea
-                id={`term-ex-${activeTab}`}
-                rows={2}
-                className="form-textarea"
-                placeholder={t('formExPh')}
-                value={formData[activeTab].example}
-                onChange={e => handleFieldChange(activeTab, 'example', e.target.value)}
-              />
+            {/* Tab Content for selected language */}
+            <div className="tab-panel-content">
+              <div className="form-group">
+                <label className="form-label" htmlFor={`term-title-${activeTab}`}>
+                  {t('formTermLabel')} ({activeTab.toUpperCase()})
+                </label>
+                <input
+                  id={`term-title-${activeTab}`}
+                  type="text"
+                  className="form-input"
+                  placeholder={t('formTermPh')}
+                  value={formData[activeTab].term}
+                  onChange={e => handleFieldChange(activeTab, 'term', e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor={`term-def-${activeTab}`}>
+                  {t('formDefLabel')} ({activeTab.toUpperCase()})
+                </label>
+                <textarea
+                  id={`term-def-${activeTab}`}
+                  rows={4}
+                  className="form-textarea"
+                  placeholder={t('formDefPh')}
+                  value={formData[activeTab].definition}
+                  onChange={e => handleFieldChange(activeTab, 'definition', e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label" htmlFor={`term-ex-${activeTab}`}>
+                  {t('formExLabel')} ({activeTab.toUpperCase()})
+                </label>
+                <textarea
+                  id={`term-ex-${activeTab}`}
+                  rows={2}
+                  className="form-textarea"
+                  placeholder={t('formExPh')}
+                  value={formData[activeTab].example}
+                  onChange={e => handleFieldChange(activeTab, 'example', e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Modal Actions */}
+          {/* Modal Actions - pinned inside modal container */}
           <div className="modal-footer">
             <button
               type="button"

@@ -4,6 +4,7 @@ import { useTerms } from '../context/TermsContext';
 import CategoryFilter from '../components/CategoryFilter';
 import AlphabetFilter from '../components/AlphabetFilter';
 import TermCard from '../components/TermCard';
+import TermDetailModal from '../components/TermDetailModal';
 import FlashcardTrainer from '../components/FlashcardTrainer';
 import { Search, X, GraduationCap, FilterX } from 'lucide-react';
 
@@ -14,6 +15,7 @@ export default function DictionaryPage({ isQuizOpen, setIsQuizOpen }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedLetter, setSelectedLetter] = useState(null);
+  const [selectedTerm, setSelectedTerm] = useState(null);
 
   // Available letters from terms in current language
   const availableLetters = useMemo(() => {
@@ -67,6 +69,24 @@ export default function DictionaryPage({ isQuizOpen, setIsQuizOpen }) {
     setSearchQuery('');
     setSelectedCategory('all');
     setSelectedLetter(null);
+  };
+
+  // Find index of selected term in currently filtered list
+  const selectedTermIndex = useMemo(() => {
+    if (!selectedTerm) return -1;
+    return filteredTerms.findIndex(t => t.id === selectedTerm.id);
+  }, [selectedTerm, filteredTerms]);
+
+  const handleNextTerm = () => {
+    if (filteredTerms.length <= 1 || selectedTermIndex === -1) return;
+    const nextIdx = (selectedTermIndex + 1) % filteredTerms.length;
+    setSelectedTerm(filteredTerms[nextIdx]);
+  };
+
+  const handlePrevTerm = () => {
+    if (filteredTerms.length <= 1 || selectedTermIndex === -1) return;
+    const prevIdx = (selectedTermIndex - 1 + filteredTerms.length) % filteredTerms.length;
+    setSelectedTerm(filteredTerms[prevIdx]);
   };
 
   return (
@@ -146,7 +166,11 @@ export default function DictionaryPage({ isQuizOpen, setIsQuizOpen }) {
         {filteredTerms.length > 0 ? (
           <div className="terms-grid">
             {filteredTerms.map(term => (
-              <TermCard key={term.id} term={term} />
+              <TermCard
+                key={term.id}
+                term={term}
+                onSelect={setSelectedTerm}
+              />
             ))}
           </div>
         ) : (
@@ -170,6 +194,18 @@ export default function DictionaryPage({ isQuizOpen, setIsQuizOpen }) {
           </div>
         )}
       </div>
+
+      {/* Term Detail Modal */}
+      {selectedTerm && (
+        <TermDetailModal
+          isOpen={Boolean(selectedTerm)}
+          term={selectedTerm}
+          onClose={() => setSelectedTerm(null)}
+          onNext={filteredTerms.length > 1 ? handleNextTerm : undefined}
+          onPrev={filteredTerms.length > 1 ? handlePrevTerm : undefined}
+          totalCount={filteredTerms.length}
+        />
+      )}
 
       {/* Flashcard Trainer Modal */}
       {isQuizOpen && (
