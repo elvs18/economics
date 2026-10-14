@@ -207,7 +207,7 @@ export default function FlashcardTrainer({ isOpen, onClose, terms = [] }) {
                   <p className="quiz-definition">{definition}</p>
                   {example && (
                     <div className="quiz-example-box">
-                      <strong>Пример / Формула:</strong>
+                      <strong>{t('exampleLabel')}:</strong>
                       <p>{example}</p>
                     </div>
                   )}
