@@ -8,7 +8,7 @@ import { BookOpen, Moon, Sun, Shield, GraduationCap, Globe, ChevronDown, Check }
 export default function Navbar({ onOpenQuiz }) {
   const { lang, setLang, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
-  const { isAuthenticated, openLoginModal } = useAuth();
+  const { isAuthenticated } = useAuth();
   const location = useLocation();
 
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
@@ -81,8 +81,8 @@ export default function Navbar({ onOpenQuiz }) {
             </button>
           )}
 
-          {/* Admin link badge or login trigger */}
-          {isAuthenticated ? (
+          {/* Admin link badge (only visible if logged in) */}
+          {isAuthenticated && (
             <Link
               to="/admin"
               className={`btn btn-sm header-admin-btn ${isAdminPage ? 'btn-primary' : 'btn-outline-admin'}`}
@@ -91,16 +91,6 @@ export default function Navbar({ onOpenQuiz }) {
               <Shield size={14} />
               <span className="admin-btn-text">Admin</span>
             </Link>
-          ) : (
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-admin header-admin-btn"
-              onClick={openLoginModal}
-              title="Панель администратора"
-            >
-              <Shield size={14} />
-              <span className="admin-btn-text">Admin</span>
-            </button>
           )}
 
           {/* Smooth Language Dropdown ("Шторка") */}
